@@ -1,5 +1,8 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <Windows.h>
 #include "resource.h"
+#include <string>
+#include <sstream>
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc PV_521";
 
@@ -21,7 +24,18 @@ CONST INT g_i_WINDOW_HEIGHT = g_i_DISPLAY_HEIGHT + g_i_START_Y + (g_i_INTERVAL +
 
 CONST CHAR g_OPERATIONS[] = "+-*/";
 
+HINSTANCE hInstance;
+HWND hDisplay;
+DOUBLE numFirst = 0.0;
+DOUBLE numSecond = 0.0;
+CHAR operation = 0;
+BOOL numNew = true;
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void digitAdd(int digit);
+void operationSet(char op);
+void Calculate();
+void Clear();
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -81,7 +95,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-	return msg.wParam;	
+	return (int)msg.wParam;
 
 }
 
@@ -91,12 +105,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 	{
-		CreateWindowEx
+		hDisplay = CreateWindowEx
 		(
 			NULL,
 			"Edit",
-			"0",
-			WS_CHILD | WS_VISIBLE| WS_BORDER | ES_RIGHT,
+			"",
+			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT,
 			10, 10,
 			g_i_DISPLAY_WIDTH, g_i_DISPLAY_HEIGHT,
 			hwnd,
@@ -143,7 +157,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL, "Button", ".",
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 			X_BUTTON_POSITION(2), Y_BUTTON_POSITION(3),
-			/*g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 2, 
+			/*g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 2,
 			g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 3,*/
 			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
 			hwnd,
@@ -204,10 +218,36 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+		return 0;
 	}
-		break;
+	break;
 	case WM_COMMAND:
-		break;
+	{
+		INT wmID = LOWORD(wParam);
+		switch (wmID)
+		{
+			case IDC_BUTTON_0: digitAdd(0); break;
+			case IDC_BUTTON_1: digitAdd(1); break;
+			case IDC_BUTTON_2: digitAdd(2); break;
+			case IDC_BUTTON_3: digitAdd(3); break;
+			case IDC_BUTTON_4: digitAdd(4); break;
+			case IDC_BUTTON_5: digitAdd(5); break;
+			case IDC_BUTTON_6: digitAdd(6); break;
+			case IDC_BUTTON_7: digitAdd(7); break;
+			case IDC_BUTTON_8: digitAdd(8); break;
+			case IDC_BUTTON_9: digitAdd(9); break;
+
+			case IDC_BUTTON_POINT: digitAdd('.'); break;
+			case IDC_BUTTON_PLUS:  operationSet('+'); break;
+			case IDC_BUTTON_MINUS: operationSet('-'); break;
+			case IDC_BUTTON_ASTER: operationSet('*'); break;
+			case IDC_BUTTON_SLASH: operationSet('/'); break;
+
+			case IDC_BUTTON_EQUAL: Calculate(); break;
+			case IDC_BUTTON_CLR: Clear(); break;
+		}
+			break;
+	}
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
@@ -216,5 +256,78 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	default: return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
-	return FALSE;
+	return 0;
+}
+
+void digitAdd(int digit)
+{
+	if (numNew)
+	{
+		SetWindowText(hDisplay, "");
+		numNew = false;
+		CHAR buffer[256] = "";
+		GetWindowText(hDisplay, buffer, 256);
+
+		std::stringstream ss;
+		ss << buffer << digit;
+		SetWindowText(hDisplay, ss.str().c_str());
+	}
+}
+
+void operationSet(char op)
+{
+	operation = op;
+	CHAR text[256];
+	GetWindowText(hDisplay, text, 256);
+	numFirst = std::stod(std::string(text));
+
+	numNew = true;
+
+	CHAR operStr[2] = { op, '\0' };
+	SetWindowText(hDisplay, operStr);
+
+}
+
+void Calculate()
+{
+	CHAR text[256];
+	GetWindowText(hDisplay, text, 256);
+	numSecond = std::stod(std::string(text));
+
+	DOUBLE result = 0.0;
+
+	switch (operation)
+	{
+	case '+': result = numFirst + numSecond; break;
+	case '-': result = numFirst - numSecond; break;
+	case '*': result = numFirst * numSecond; break;
+	case '/':
+		if (numSecond != 0.0)
+		{
+			result = numFirst / numSecond;
+		}
+		else
+		{
+			SetWindowText(hDisplay, "Error");
+			return;
+		}
+		break;
+	default: result = numFirst; break;
+	}
+
+	std::stringstream ss;
+	ss << result;
+	SetWindowText(hDisplay, ss.str().c_str());
+
+	numNew = true;
+	operation = 0;
+}
+
+void Clear()
+{
+	numFirst = 0.0;
+	numSecond = 0.0;
+	operation = 0;
+	numNew = true;
+	SetWindowText(hDisplay, "0");
 }
