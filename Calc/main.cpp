@@ -24,7 +24,7 @@ CONST INT g_i_WINDOW_HEIGHT = g_i_DISPLAY_HEIGHT + g_i_START_Y + (g_i_INTERVAL +
 
 CONST CHAR g_OPERATIONS[] = "+-*/";
 
-HINSTANCE hInstance;
+//HINSTANCE hInstance;
 HWND hDisplay;
 DOUBLE numFirst = 0.0;
 DOUBLE numSecond = 0.0;
