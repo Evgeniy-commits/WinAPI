@@ -217,6 +217,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CHAR sz_buffer[SIZE] = {};
 		CHAR sz_digit[2] = {};
 		SendMessage(hEdit, WM_GETTEXT, SIZE, (LPARAM)sz_buffer);
+		SetFocus(hwnd);
+
 		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
 		{
 			sz_digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
