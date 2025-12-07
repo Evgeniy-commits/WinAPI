@@ -1,333 +1,456 @@
-//#define _CRT_SECURE_NO_WARNINGS
-//#include <Windows.h>
-//#include "resource.h"
-//#include <string>
-//#include <sstream>
-//
-//CONST CHAR g_sz_WINDOW_CLASS[] = "Calc PV_521";
-//
-//CONST INT g_i_BUTTON_SIZE = 50;
-//CONST INT g_i_INTERVAL = 1;
-//CONST INT g_i_DOUBLE_BUTTON_SIZE = g_i_BUTTON_SIZE * 2 + g_i_INTERVAL;
-//CONST INT g_i_DISPLAY_WIDTH = g_i_BUTTON_SIZE * 5 + g_i_INTERVAL * 4;
-//CONST INT g_i_DISPLAY_HEIGHT = 22;
-//CONST INT g_i_START_X = 10;
-//CONST INT g_i_START_Y = 10;
-//CONST INT g_i_BUTTON_START_X = g_i_START_X;
-//CONST INT g_i_BUTTON_START_Y = g_i_START_Y + g_i_DISPLAY_HEIGHT + g_i_INTERVAL;
-//
-//CONST INT g_i_WINDOW_WIDTH = g_i_DISPLAY_WIDTH + g_i_START_X * 2 + 16;
-//CONST INT g_i_WINDOW_HEIGHT = g_i_DISPLAY_HEIGHT + g_i_START_Y + (g_i_INTERVAL + g_i_BUTTON_SIZE) * 4 + 48;
-//
-//#define X_BUTTON_POSITION(position) g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (position) 
-//#define Y_BUTTON_POSITION(position) g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (position)
-//
-//CONST CHAR g_OPERATIONS[] = "+-*/";
-//
-////HINSTANCE hInstance;
-//HWND hDisplay;
-//DOUBLE numFirst = 0.0;
-//DOUBLE numSecond = 0.0;
-//CHAR operation = 0;
-//BOOL numNew = true;
-//
-//LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-//void digitAdd(int digit);
-//void operationSet(char op);
-//void Calculate();
-//void Clear();
-//
-//INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
-//{
-//	//1)Регистрация класса окна:
-//	WNDCLASSEX wClass;
-//	ZeroMemory(&wClass, sizeof(wClass));
-//
-//	wClass.style = 0;
-//	wClass.cbSize = sizeof(wClass);
-//	wClass.cbClsExtra = 0;
-//	wClass.cbWndExtra = 0;
-//
-//	wClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-//	wClass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-//	wClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-//	wClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-//
-//	wClass.hInstance = hInstance;
-//	wClass.lpszMenuName = NULL;
-//	wClass.lpfnWndProc = WndProc;
-//	wClass.lpszClassName = g_sz_WINDOW_CLASS;
-//
-//	if (RegisterClassEx(&wClass) == NULL)
-//	{
-//		MessageBox(NULL, "Класс не зарегистрирован", NULL, MB_OK | MB_ICONERROR);
-//		return 0;
-//	}
-//	//2)Создание окна:
-//
-//	HWND hwnd = CreateWindowEx
-//	(
-//		NULL,
-//		g_sz_WINDOW_CLASS,
-//		g_sz_WINDOW_CLASS,
-//		WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX,
-//		//WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
-//		CW_USEDEFAULT, CW_USEDEFAULT,
-//		g_i_WINDOW_WIDTH, g_i_WINDOW_HEIGHT,
-//		NULL,
-//		NULL,
-//		hInstance,
-//		NULL
-//	);
-//	if (hwnd == NULL)
-//	{
-//		MessageBox(NULL, "Window Creation failed", NULL, MB_OK | MB_ICONERROR);
-//		return 0;
-//	}
-//	ShowWindow(hwnd, nCmdShow);
-//	UpdateWindow(hwnd);
-//
-//	//3)Запуск цикла сообщений:
-//
-//	MSG msg = {};
-//	while (GetMessage(&msg, NULL, 0, 0) > 0)
-//	{
-//		TranslateMessage(&msg);
-//		DispatchMessage(&msg);
-//	}
-//	return (int)msg.wParam;
-//
-//}
-//
-//LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-//{
-//	switch (uMsg)
-//	{
-//	case WM_CREATE:
-//	{
-//		hDisplay = CreateWindowEx
-//		(
-//			NULL,
-//			"Edit",
-//			"",
-//			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT,
-//			10, 10,
-//			g_i_DISPLAY_WIDTH, g_i_DISPLAY_HEIGHT,
-//			hwnd,
-//			(HMENU)IDC_DISPLAY,
-//			GetModuleHandle(NULL),
-//			NULL
-//		);
-//
-//		CHAR sz_button[2] = {};
-//		for (int i = 6; i >= 0; i -= 3)
-//		{
-//			for (int j = 0; j < 3; j++)
-//			{
-//				sz_button[0] = i + j + '1';
-//				CreateWindowEx
-//				(
-//					NULL, "Button", sz_button,
-//					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-//					X_BUTTON_POSITION(j), Y_BUTTON_POSITION(2 - i / 3),
-//					/*g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * j,
-//					g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (2 - i / 3),*/
-//					g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
-//					hwnd,
-//					HMENU(IDC_BUTTON_1 + i + j),
-//					GetModuleHandle(NULL),
-//					NULL
-//				);
-//			}
-//		}
-//		CreateWindowEx
-//		(
-//			NULL, "Button", "0",
-//			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-//			X_BUTTON_POSITION(0), Y_BUTTON_POSITION(3),
-//			/*g_i_BUTTON_START_X, g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 3,*/
-//			g_i_DOUBLE_BUTTON_SIZE, g_i_BUTTON_SIZE,
-//			hwnd,
-//			(HMENU)IDC_BUTTON_0,
-//			GetModuleHandle(NULL),
-//			NULL
-//		);
-//		CreateWindowEx
-//		(
-//			NULL, "Button", ".",
-//			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-//			X_BUTTON_POSITION(2), Y_BUTTON_POSITION(3),
-//			/*g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 2,
-//			g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 3,*/
-//			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
-//			hwnd,
-//			(HMENU)IDC_BUTTON_POINT,
-//			GetModuleHandle(NULL),
-//			NULL
-//		);
-//
-//		CHAR sz_operations[2] = "";
-//		for (int i = 0; i < 4; i++)
-//		{
-//			sz_operations[0] = g_OPERATIONS[i];
-//			CreateWindowEx
-//			(
-//				NULL, "Button", sz_operations,
-//				WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-//				X_BUTTON_POSITION(3), Y_BUTTON_POSITION(3 - i),
-//				g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
-//				hwnd,
-//				HMENU(IDC_BUTTON_PLUS + i),
-//				GetModuleHandle(NULL),
-//				NULL
-//			);
-//		}
-//
-//		CreateWindowEx
-//		(
-//			NULL, "Button", "<-",
-//			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-//			X_BUTTON_POSITION(4), Y_BUTTON_POSITION(0),
-//			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
-//			hwnd,
-//			(HMENU)IDC_BUTTON_BSP,
-//			GetModuleHandle(NULL),
-//			NULL
-//		);
-//
-//		CreateWindowEx
-//		(
-//			NULL, "Button", "C",
-//			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-//			X_BUTTON_POSITION(4), Y_BUTTON_POSITION(1),
-//			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
-//			hwnd,
-//			(HMENU)IDC_BUTTON_CLR,
-//			GetModuleHandle(NULL),
-//			NULL
-//		);
-//
-//		CreateWindowEx
-//		(
-//			NULL, "Button", "=",
-//			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-//			X_BUTTON_POSITION(4), Y_BUTTON_POSITION(2),
-//			g_i_BUTTON_SIZE, g_i_DOUBLE_BUTTON_SIZE,
-//			hwnd,
-//			(HMENU)IDC_BUTTON_EQUAL,
-//			GetModuleHandle(NULL),
-//			NULL
-//		);
-//		return 0;
-//	}
-//	break;
-//	case WM_COMMAND:
-//	{
-//		INT wmID = LOWORD(wParam);
-//		switch (wmID)
-//		{
-//			case IDC_BUTTON_0: digitAdd(0); break;
-//			case IDC_BUTTON_1: digitAdd(1); break;
-//			case IDC_BUTTON_2: digitAdd(2); break;
-//			case IDC_BUTTON_3: digitAdd(3); break;
-//			case IDC_BUTTON_4: digitAdd(4); break;
-//			case IDC_BUTTON_5: digitAdd(5); break;
-//			case IDC_BUTTON_6: digitAdd(6); break;
-//			case IDC_BUTTON_7: digitAdd(7); break;
-//			case IDC_BUTTON_8: digitAdd(8); break;
-//			case IDC_BUTTON_9: digitAdd(9); break;
-//
-//			case IDC_BUTTON_POINT: digitAdd('.'); break;
-//			case IDC_BUTTON_PLUS:  operationSet('+'); break;
-//			case IDC_BUTTON_MINUS: operationSet('-'); break;
-//			case IDC_BUTTON_ASTER: operationSet('*'); break;
-//			case IDC_BUTTON_SLASH: operationSet('/'); break;
-//
-//			case IDC_BUTTON_EQUAL: Calculate(); break;
-//			case IDC_BUTTON_CLR: Clear(); break;
-//		}
-//			break;
-//	}
-//	case WM_DESTROY:
-//		PostQuitMessage(0);
-//		break;
-//	case WM_CLOSE:
-//		DestroyWindow(hwnd);
-//		break;
-//	default: return DefWindowProc(hwnd, uMsg, wParam, lParam);
-//	}
-//	return 0;
-//}
-//
-//void digitAdd(int digit)
-//{
-//	if (numNew)
-//	{
-//		SetWindowText(hDisplay, "");
-//		numNew = false;
-//		CHAR buffer[256] = "";
-//		GetWindowText(hDisplay, buffer, 256);
-//
-//		std::stringstream ss;
-//		ss << buffer << digit;
-//		SetWindowText(hDisplay, ss.str().c_str());
-//	}
-//}
-//
-//void operationSet(char op)
-//{
-//	operation = op;
-//	CHAR text[256];
-//	GetWindowText(hDisplay, text, 256);
-//	numFirst = std::stod(std::string(text));
-//
-//	numNew = true;
-//
-//	CHAR operStr[2] = { op, '\0' };
-//	SetWindowText(hDisplay, operStr);
-//
-//}
-//
-//void Calculate()
-//{
-//	CHAR text[256];
-//	GetWindowText(hDisplay, text, 256);
-//	numSecond = std::stod(std::string(text));
-//
-//	DOUBLE result = 0.0;
-//
-//	switch (operation)
-//	{
-//	case '+': result = numFirst + numSecond; break;
-//	case '-': result = numFirst - numSecond; break;
-//	case '*': result = numFirst * numSecond; break;
-//	case '/':
-//		if (numSecond != 0.0)
-//		{
-//			result = numFirst / numSecond;
-//		}
-//		else
-//		{
-//			SetWindowText(hDisplay, "Error");
-//			return;
-//		}
-//		break;
-//	default: result = numFirst; break;
-//	}
-//
-//	std::stringstream ss;
-//	ss << result;
-//	SetWindowText(hDisplay, ss.str().c_str());
-//
-//	numNew = true;
-//	operation = 0;
-//}
-//
-//void Clear()
-//{
-//	numFirst = 0.0;
-//	numSecond = 0.0;
-//	operation = 0;
-//	numNew = true;
-//	SetWindowText(hDisplay, "0");
-//}
+#define _CRT_SECURE_NO_WARNINGS
+#include <Windows.h>
+#include <iostream>
+#include <string>
+#include "resource.h"
+
+CONST CHAR g_sz_WINDOW_CLASS[] = "Calc PV_521";
+
+CONST INT g_i_BUTTON_SIZE = 50;
+CONST INT g_i_INTERVAL = 1;
+CONST INT g_i_DOUBLE_BUTTON_SIZE = g_i_BUTTON_SIZE * 2 + g_i_INTERVAL;
+CONST INT g_i_DISPLAY_WIDTH = g_i_BUTTON_SIZE * 5 + g_i_INTERVAL * 4;
+CONST INT g_i_DISPLAY_HEIGHT = 22;
+CONST INT g_i_START_X = 10;
+CONST INT g_i_START_Y = 10;
+CONST INT g_i_BUTTON_START_X = g_i_START_X;
+CONST INT g_i_BUTTON_START_Y = g_i_START_Y + g_i_DISPLAY_HEIGHT + g_i_INTERVAL;
+
+CONST INT g_i_WINDOW_WIDTH = g_i_DISPLAY_WIDTH + g_i_START_X * 2 + 16;
+CONST INT g_i_WINDOW_HEIGHT = g_i_DISPLAY_HEIGHT + g_i_START_Y + (g_i_INTERVAL + g_i_BUTTON_SIZE) * 4 + 48;
+
+#define X_BUTTON_POSITION(position) g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (position) 
+#define Y_BUTTON_POSITION(position) g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (position)
+
+CONST CHAR g_OPERATIONS[] = "+-*/";
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+void SetOperation(HWND hwnd, CHAR op);
+void Calculate(HWND hwnd);
+void SaveFOperand(HWND hwnd);
+void SaveSOperand(HWND hwnd);
+
+DOUBLE num_f = 0.0, num_s = 0.0;
+CHAR Operation = '\0';
+
+INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
+{
+	//1)Регистрация класса окна:
+	WNDCLASSEX wClass;
+	ZeroMemory(&wClass, sizeof(wClass));
+
+	wClass.style = 0;
+	wClass.cbSize = sizeof(wClass);
+	wClass.cbClsExtra = 0;
+	wClass.cbWndExtra = 0;
+
+	wClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wClass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+	wClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+
+	wClass.hInstance = hInstance;
+	wClass.lpszMenuName = NULL;
+	wClass.lpfnWndProc = WndProc;
+	wClass.lpszClassName = g_sz_WINDOW_CLASS;
+
+	if (RegisterClassEx(&wClass) == NULL)
+	{
+		MessageBox(NULL, "Класс не зарегистрирован", NULL, MB_OK | MB_ICONERROR);
+		return 0;
+	}
+	//2)Создание окна:
+
+	HWND hwnd = CreateWindowEx
+	(
+		NULL,
+		g_sz_WINDOW_CLASS,
+		g_sz_WINDOW_CLASS,
+		WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX,
+		//WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
+		CW_USEDEFAULT, CW_USEDEFAULT,
+		g_i_WINDOW_WIDTH, g_i_WINDOW_HEIGHT,
+		NULL,
+		NULL,
+		hInstance,
+		NULL
+	);
+	if (hwnd == NULL)
+	{
+		MessageBox(NULL, "Window Creation failed", NULL, MB_OK | MB_ICONERROR);
+		return 0;
+	}
+	ShowWindow(hwnd, nCmdShow);
+	UpdateWindow(hwnd);
+
+	//3)Запуск цикла сообщений:
+
+	MSG msg = {};
+	while (GetMessage(&msg, NULL, 0, 0) > 0)
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+	return msg.wParam;
+
+}
+
+LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+	case WM_CREATE:
+	{
+		AllocConsole();
+		freopen("CONOUT$", "w", stdout);
+		CreateWindowEx
+		(
+			NULL,
+			"Edit",
+			"0",
+			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT,
+			10, 10,
+			g_i_DISPLAY_WIDTH, g_i_DISPLAY_HEIGHT,
+			hwnd,
+			(HMENU)IDC_DISPLAY,
+			GetModuleHandle(NULL),
+			NULL
+		);
+
+		CHAR sz_button[2] = {};
+		for (int i = 6; i >= 0; i -= 3)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				sz_button[0] = i + j + '1';
+				CreateWindowEx
+				(
+					NULL, "Button", sz_button,
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+					X_BUTTON_POSITION(j), Y_BUTTON_POSITION(2 - i / 3),
+					/*g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * j,
+					g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (2 - i / 3),*/
+					g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+					hwnd,
+					HMENU(IDC_BUTTON_1 + i + j),
+					GetModuleHandle(NULL),
+					NULL
+				);
+			}
+		}
+		CreateWindowEx
+		(
+			NULL, "Button", "0",
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+			X_BUTTON_POSITION(0), Y_BUTTON_POSITION(3),
+			/*g_i_BUTTON_START_X, g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 3,*/
+			g_i_DOUBLE_BUTTON_SIZE, g_i_BUTTON_SIZE,
+			hwnd,
+			(HMENU)IDC_BUTTON_0,
+			GetModuleHandle(NULL),
+			NULL
+		);
+		CreateWindowEx
+		(
+			NULL, "Button", ".",
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+			X_BUTTON_POSITION(2), Y_BUTTON_POSITION(3),
+			/*g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 2,
+			g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 3,*/
+			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+			hwnd,
+			(HMENU)IDC_BUTTON_POINT,
+			GetModuleHandle(NULL),
+			NULL
+		);
+
+		CHAR sz_operations[2] = "";
+		for (int i = 0; i < 4; i++)
+		{
+			sz_operations[0] = g_OPERATIONS[i];
+			CreateWindowEx
+			(
+				NULL, "Button", sz_operations,
+				WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+				X_BUTTON_POSITION(3), Y_BUTTON_POSITION(3 - i),
+				g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+				hwnd,
+				HMENU(IDC_BUTTON_PLUS + i),
+				GetModuleHandle(NULL),
+				NULL
+			);
+		}
+
+		CreateWindowEx
+		(
+			NULL, "Button", "<-",
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+			X_BUTTON_POSITION(4), Y_BUTTON_POSITION(0),
+			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+			hwnd,
+			(HMENU)IDC_BUTTON_BSP,
+			GetModuleHandle(NULL),
+			NULL
+		);
+
+		CreateWindowEx
+		(
+			NULL, "Button", "C",
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+			X_BUTTON_POSITION(4), Y_BUTTON_POSITION(1),
+			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+			hwnd,
+			(HMENU)IDC_BUTTON_CLR,
+			GetModuleHandle(NULL),
+			NULL
+		);
+
+		CreateWindowEx
+		(
+			NULL, "Button", "=",
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+			X_BUTTON_POSITION(4), Y_BUTTON_POSITION(2),
+			g_i_BUTTON_SIZE, g_i_DOUBLE_BUTTON_SIZE,
+			hwnd,
+			(HMENU)IDC_BUTTON_EQUAL,
+			GetModuleHandle(NULL),
+			NULL
+		);
+	}
+	break;
+	case WM_COMMAND:
+	{
+		HWND hEdit = GetDlgItem(hwnd, IDC_DISPLAY);
+		CONST INT SIZE = 256;
+		CHAR sz_buffer[SIZE] = {};
+		CHAR sz_digit[2] = {};
+		SendMessage(hEdit, WM_GETTEXT, SIZE, (LPARAM)sz_buffer);
+		SetFocus(hwnd);
+
+		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
+		{
+			sz_digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
+			if (strcmp(sz_buffer, "0") == 0) strcpy(sz_buffer, sz_digit);
+			else lstrcat(sz_buffer, sz_digit);
+			//strcat() - String concatenation
+			//strcat(dst, src) - dst += src
+			SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)sz_buffer);
+		}
+
+		if (LOWORD(wParam) == IDC_BUTTON_POINT)
+		{
+			if (strchr(sz_buffer, '.') == 0) strcat(sz_buffer, ".");
+			SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)sz_buffer);
+		}
+
+		if (LOWORD(wParam) == IDC_BUTTON_BSP)
+		{
+			if (strlen(sz_buffer) == 1) sz_buffer[0] = '0';
+			else sz_buffer[strlen(sz_buffer) - 1] = 0;
+			SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)sz_buffer);
+		}
+
+		if (LOWORD(wParam) == IDC_BUTTON_CLR)
+		{
+			SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)"0");
+		}
+		if (LOWORD(wParam) == IDC_BUTTON_PLUS)
+		{
+			SaveFOperand(hwnd);
+			SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)"+");
+			SetOperation(hwnd, '+');
+		}
+		if (LOWORD(wParam) == IDC_BUTTON_MINUS)
+		{
+			SaveFOperand(hwnd);
+			SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)"-");
+			SetOperation(hwnd, '-');
+		}
+		if (LOWORD(wParam) == IDC_BUTTON_ASTER)
+		{
+			SaveFOperand(hwnd);
+			SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)"*");
+			SetOperation(hwnd, '*');
+		}
+		if (LOWORD(wParam) == IDC_BUTTON_SLASH)
+		{
+			SaveFOperand(hwnd);
+			SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)"/");
+			SetOperation(hwnd, '/');
+		}
+		if (LOWORD(wParam) == IDC_BUTTON_EQUAL)
+		{
+			SaveSOperand(hwnd);
+			SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)"");
+			Calculate(hwnd);
+		}
+	}
+	break;
+	case WM_KEYDOWN:
+	{
+		if (GetKeyState(VK_SHIFT) < 0 && wParam == '8')
+			SendMessage(GetDlgItem(hwnd, IDC_BUTTON_ASTER), BM_SETSTATE, TRUE, 0);
+		else if (wParam >= '0' && wParam <= '9')
+		{
+			SendMessage(GetDlgItem(hwnd, wParam - '0' + IDC_BUTTON_0), BM_SETSTATE, TRUE, 0);
+		}
+		else if (wParam >= 0x60 && wParam <= 0x69)
+		{
+			SendMessage(GetDlgItem(hwnd, wParam - 0x60 + IDC_BUTTON_0), BM_SETSTATE, TRUE, 0);
+		}
+		switch (wParam)
+		{
+		case VK_OEM_PLUS:
+		case VK_ADD: SendMessage(GetDlgItem(hwnd, IDC_BUTTON_PLUS), BM_SETSTATE, TRUE, 0); break;
+
+		case VK_OEM_MINUS:
+		case VK_SUBTRACT: SendMessage(GetDlgItem(hwnd, IDC_BUTTON_MINUS), BM_SETSTATE, TRUE, 0); break;
+
+		case VK_MULTIPLY: SendMessage(GetDlgItem(hwnd, IDC_BUTTON_ASTER), BM_SETSTATE, TRUE, 0); break;
+
+		case VK_OEM_2:
+		case VK_DIVIDE: SendMessage(GetDlgItem(hwnd, IDC_BUTTON_SLASH), BM_SETSTATE, TRUE, 0); break;
+
+		case VK_DECIMAL:
+		case VK_OEM_PERIOD: SendMessage(GetDlgItem(hwnd, IDC_BUTTON_POINT), BM_SETSTATE, TRUE, 0); break;
+
+		case VK_BACK: SendMessage(GetDlgItem(hwnd, IDC_BUTTON_BSP), BM_SETSTATE, TRUE, 0);     break;
+		case VK_ESCAPE: SendMessage(GetDlgItem(hwnd, IDC_BUTTON_CLR), BM_SETSTATE, TRUE, 0);   break;
+		case VK_RETURN: SendMessage(GetDlgItem(hwnd, IDC_BUTTON_EQUAL), BM_SETSTATE, TRUE, 0); break;
+		}
+	}
+	break;
+	case WM_KEYUP:
+	{
+		if (GetKeyState(VK_SHIFT) < 0 && wParam == '8')
+		{
+			SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_ASTER), 0);
+			SendMessage(GetDlgItem(hwnd, IDC_BUTTON_ASTER), BM_SETSTATE, FALSE, 0);
+		}
+		else if (wParam >= '0' && wParam <= '9')
+		{
+			SendMessage(hwnd, WM_COMMAND, LOWORD(wParam - '0' + IDC_BUTTON_0), 0);
+			SendMessage(GetDlgItem(hwnd, wParam - '0' + IDC_BUTTON_0), BM_SETSTATE, FALSE, 0);
+		}
+		else if (wParam >= 0x60 && wParam <= 0x69)
+		{
+			SendMessage(hwnd, WM_COMMAND, LOWORD(wParam - 0x60 + IDC_BUTTON_0), 0);
+			SendMessage(GetDlgItem(hwnd, wParam - 0x60 + IDC_BUTTON_0), BM_SETSTATE, FALSE, 0);
+		}
+		switch (wParam)
+		{
+		case VK_OEM_PLUS:
+		case VK_ADD:
+			SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_PLUS), 0);
+			SendMessage(GetDlgItem(hwnd, IDC_BUTTON_PLUS), BM_SETSTATE, FALSE, 0);
+			break;
+
+		case VK_OEM_MINUS:
+		case VK_SUBTRACT:
+			SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_MINUS), 0);
+			SendMessage(GetDlgItem(hwnd, IDC_BUTTON_MINUS), BM_SETSTATE, FALSE, 0);
+			break;
+
+		case VK_MULTIPLY:
+			SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_ASTER), 0);
+			SendMessage(GetDlgItem(hwnd, IDC_BUTTON_ASTER), BM_SETSTATE, FALSE, 0);
+			break;
+
+		case VK_OEM_2:
+		case VK_DIVIDE:
+			SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_SLASH), 0);
+			SendMessage(GetDlgItem(hwnd, IDC_BUTTON_SLASH), BM_SETSTATE, FALSE, 0);
+			break;
+
+		case VK_DECIMAL:
+		case VK_OEM_PERIOD:
+			SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_POINT), 0);
+			SendMessage(GetDlgItem(hwnd, IDC_BUTTON_POINT), BM_SETSTATE, FALSE, 0);
+			break;
+
+		case VK_BACK:
+			SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_BSP), 0);
+			SendMessage(GetDlgItem(hwnd, IDC_BUTTON_BSP), BM_SETSTATE, FALSE, 0);
+			break;
+		case VK_ESCAPE:
+			SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_CLR), 0);
+			SendMessage(GetDlgItem(hwnd, IDC_BUTTON_CLR), BM_SETSTATE, FALSE, 0);
+			break;
+		case VK_RETURN:
+			SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_EQUAL), 0);
+			SendMessage(GetDlgItem(hwnd, IDC_BUTTON_EQUAL), BM_SETSTATE, FALSE, 0);
+			break;
+		}
+	}
+	break;
+	case WM_DESTROY:
+		FreeConsole();
+		PostQuitMessage(0);
+		break;
+	case WM_CLOSE:
+		DestroyWindow(hwnd);
+		break;
+	default: return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	}
+	return FALSE;
+}
+
+void SaveFOperand(HWND hwnd)
+{
+	CHAR bufferInput_f[256] = {};
+	CHAR* endptr = NULL;
+	SendMessage(GetDlgItem(hwnd, IDC_DISPLAY), WM_GETTEXT, sizeof(bufferInput_f), (LPARAM)bufferInput_f);
+
+	if (strlen(bufferInput_f) > 0 && strcmp(bufferInput_f, "0") != 0)
+	{
+		num_f = strtod(bufferInput_f, &endptr);
+	}
+}
+
+void SaveSOperand(HWND hwnd)
+{
+	CHAR bufferInput_s[256] = {};
+	CHAR* endptr = NULL;
+	SendMessage(GetDlgItem(hwnd, IDC_DISPLAY), WM_GETTEXT, sizeof(bufferInput_s), (LPARAM)bufferInput_s);
+
+	if (strlen(bufferInput_s) > 0 && strcmp(bufferInput_s, "0") != 0)
+	{
+		num_s = strtod(bufferInput_s, &endptr);
+	}
+}
+
+void SetOperation(HWND hwnd, CHAR op)
+{
+	Operation = op;
+
+	SetWindowText(GetDlgItem(hwnd, IDC_DISPLAY), "0");
+}
+
+void Calculate(HWND hwnd)
+{
+	DOUBLE result = 0.0;
+	switch (Operation)
+	{
+	case '+': result = num_f + num_s; break;
+	case '-': result = num_f - num_s; break;
+	case '*': result = num_f * num_s; break;
+	case '/':
+		if (num_s != 0.0)
+		{
+			result = num_f / num_s;
+		}
+		else
+		{
+			SetWindowText(GetDlgItem(hwnd, IDC_DISPLAY), "Error");
+			return;
+		}
+		break;
+	default: result = num_f; break;
+	}
+
+	CHAR bufferResult[256] = {};
+	snprintf(bufferResult, sizeof(bufferResult), "%.3f", result);
+	SendMessage(GetDlgItem(hwnd, IDC_DISPLAY), WM_SETTEXT, sizeof(bufferResult), (LPARAM)bufferResult);
+
+	Operation = '\0';
+}
