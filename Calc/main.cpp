@@ -449,8 +449,9 @@ void Calculate(HWND hwnd)
 	}
 
 	CHAR bufferResult[256] = {};
-	snprintf(bufferResult, sizeof(bufferResult), "%.3f", result);
+	snprintf(bufferResult, sizeof(bufferResult), "%.5g", result);
 	SendMessage(GetDlgItem(hwnd, IDC_DISPLAY), WM_SETTEXT, sizeof(bufferResult), (LPARAM)bufferResult);
+
 
 	Operation = '\0';
 	num_f = result;
