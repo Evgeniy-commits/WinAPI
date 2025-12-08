@@ -30,8 +30,8 @@ void Calculate(HWND hwnd);
 void SaveFOperand(HWND hwnd);
 void SaveSOperand(HWND hwnd);
 
-DOUBLE num_f = 0.0, num_s = 0.0;
-CHAR Operation = '\0';
+static DOUBLE num_f = 0.0, num_s = 0.0;
+static CHAR Operation = '\0';
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -422,7 +422,7 @@ void SaveSOperand(HWND hwnd)
 void SetOperation(HWND hwnd, CHAR op)
 {   
 	Operation = op;
-
+	
 	SetWindowText(GetDlgItem(hwnd, IDC_DISPLAY), "");
 }
 
