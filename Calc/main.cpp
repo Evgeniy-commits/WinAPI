@@ -420,10 +420,10 @@ void SaveSOperand(HWND hwnd)
 }
 
 void SetOperation(HWND hwnd, CHAR op)
-{
+{   
 	Operation = op;
 
-	SetWindowText(GetDlgItem(hwnd, IDC_DISPLAY), "0");
+	SetWindowText(GetDlgItem(hwnd, IDC_DISPLAY), "");
 }
 
 void Calculate(HWND hwnd)
@@ -453,4 +453,6 @@ void Calculate(HWND hwnd)
 	SendMessage(GetDlgItem(hwnd, IDC_DISPLAY), WM_SETTEXT, sizeof(bufferResult), (LPARAM)bufferResult);
 
 	Operation = '\0';
+	num_f = result;
+	num_s = 0.0;
 }
