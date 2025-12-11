@@ -42,7 +42,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	wClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 	wClass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 	wClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	//wClass.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 
 	wClass.hInstance = hInstance;
 	wClass.lpszMenuName = NULL;
@@ -444,6 +444,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case IDM_EXIT: SendMessage(hwnd, WM_CLOSE, 0, 0); break;
 		}
 		DestroyMenu(cmMain);
+	}
+		break;
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hwnd, &ps);
+		HBRUSH hBrush = CreateSolidBrush(RGB(96, 124, 142));
+		FillRect(hdc, &ps.rcPaint, hBrush);
+		DeleteObject(hBrush);
+		EndPaint(hwnd, &ps);
 	}
 		break;
 	case WM_DESTROY:
