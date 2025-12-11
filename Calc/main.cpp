@@ -22,6 +22,8 @@ CONST INT g_i_WINDOW_HEIGHT = g_i_DISPLAY_HEIGHT + g_i_START_Y + (g_i_INTERVAL +
 #define Y_BUTTON_POSITION(position) g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (position)
 
 CONST CHAR g_OPERATIONS[] = "+-*/";
+CONST INT g_BUTTON[] = { IDC_BUTTON_POINT, IDC_BUTTON_PLUS, IDC_BUTTON_MINUS, IDC_BUTTON_ASTER, IDC_BUTTON_SLASH, IDC_BUTTON_BSP, IDC_BUTTON_CLR};
+CONST CHAR* g_str_BUTTON[] = {"point", "plus", "minus", "aster", "slash", "bsp", "clr"};
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
@@ -153,7 +155,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		);
 		SendMessage(hButtonZero, BM_SETIMAGE, 0, (LPARAM)hbmpZero);
 
-		CreateWindowEx
+		HWND hButtonPoint = CreateWindowEx
 		(
 			NULL, "Button", ".",
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_BITMAP,
@@ -166,6 +168,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+		//SendMessage(hButtonPoint, BM_SETIMAGE, 0, (LPARAM)hbmpPoint);
 
 		CHAR sz_operations[2] = "";
 		for (int i = 0; i < 4; i++)
@@ -473,4 +476,31 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 			);
 		SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)bmpButton);
 	}
+	
+	for (int i = 0; i < sizeof(g_BUTTON) / sizeof(g_BUTTON[0]); i++)
+	{
+		sprintf(sz_filename, "ButtonsBMP\\%s\\button_%s.bmp", skin, g_str_BUTTON[i]);
+		HWND hButton = GetDlgItem(hwnd, (g_BUTTON[i]));
+		HBITMAP bmpButton = (HBITMAP)LoadImage
+			(
+				GetModuleHandle(NULL),
+				sz_filename,
+				IMAGE_BITMAP,
+				g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+				LR_LOADFROMFILE
+			);
+		SendMessage(hButton, BM_SETIMAGE, 0, (LPARAM)bmpButton);
+	}
+
+	sprintf(sz_filename, "ButtonsBMP\\%s\\button_equal.bmp", skin);
+	HWND hButtonEqual = GetDlgItem(hwnd, IDC_BUTTON_EQUAL);
+	HBITMAP bmpButtonEqual = (HBITMAP)LoadImage
+	(
+		GetModuleHandle(NULL),
+		sz_filename,
+		IMAGE_BITMAP,
+		g_i_BUTTON_SIZE, g_i_DOUBLE_BUTTON_SIZE,
+		LR_LOADFROMFILE
+	);
+	SendMessage(hButtonEqual, BM_SETIMAGE, 0, (LPARAM)bmpButtonEqual);
 }
