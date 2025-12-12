@@ -27,6 +27,16 @@ CONST INT g_i_WINDOW_HEIGHT = g_i_DISPLAY_HEIGHT + g_i_START_Y + (g_i_INTERVAL +
 #define Y_BUTTON_POSITION(position) g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (position)
 
 CONST CHAR g_OPERATIONS[] = "+-*/";
+CONST INT g_i_WINDOW_COLOR = 0;
+CONST INT g_i_DISPLAY_COLOR = 1;
+CONST INT g_i_FONT_COLOR = 2;
+CONST COLORREF g_clr_COLORS[][3] =
+{
+	{RGB(160, 180, 200), RGB(100, 120, 140), RGB(168, 60, 9)},
+	{RGB(0, 0, 150), RGB(0, 0, 100), RGB(255, 0, 0)}
+};
+CONST CHAR* g_sz_SKIN[] = { "Metal_mistral", "Square_blue" };
+
 CONST INT g_BUTTON[] = { IDC_BUTTON_POINT, IDC_BUTTON_PLUS, IDC_BUTTON_MINUS, IDC_BUTTON_ASTER, IDC_BUTTON_SLASH, IDC_BUTTON_BSP, IDC_BUTTON_CLR};
 CONST CHAR* g_str_BUTTON[] = {"point", "plus", "minus", "aster", "slash", "bsp", "clr"};
 
@@ -99,6 +109,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	static HBRUSH hBrush = NULL;
+	static INT skinID = 0;
 	switch (uMsg)
 	{
 	case WM_CREATE:
@@ -256,17 +267,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HWND hEdit = (HWND)lParam;		// Дескриптор поля ввода;
 										// принимается HDC EditControl;
 		//SetBkMode(hdc, TRANSPARENT);          // Делаем фон прозрачным; 
-		SetBkColor(hdc, RGB(100, 120, 140));
-		SetTextColor(hdc, RGB(168, 60, 9));
+		SetBkColor(hdc, g_clr_COLORS[skinID][g_i_DISPLAY_COLOR]);
+		SetTextColor(hdc, g_clr_COLORS[skinID][g_i_FONT_COLOR]);
 
 		if (hBrush == NULL)
 		{
-			hBrush = CreateSolidBrush(RGB(100, 120, 140)); 
+			hBrush = CreateSolidBrush(g_clr_COLORS[skinID][g_i_WINDOW_COLOR]);
 		}
 
-		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(RGB(160, 180, 200)));
+		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
 		SendMessage(hwnd, WM_ERASEBKGND, wParam, 0);
-
+		//DeleteObject(hBrush);
 		return (LRESULT)hBrush;
 	}
 	break;
@@ -485,10 +496,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			switch (selected_item)
 			{
-			case IDM_SQUARE_BLUE: SetSkin(hwnd, "Square_blue"); break;
-			case IDM_METAL_MISTRAL: SetSkin(hwnd, "Metal_mistral"); break;
+			case IDM_SQUARE_BLUE: skinID = 1; break;
+			case IDM_METAL_MISTRAL: skinID = 0; break;
 			case IDM_EXIT: SendMessage(hwnd, WM_CLOSE, 0, 0); break;
 			}
+			
+			InvalidateRect(hwnd, 0, TRUE);
+			SetSkin(hwnd, g_sz_SKIN[skinID]);
 			DestroyMenu(cmMain);
 		}
 		break;
