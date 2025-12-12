@@ -30,7 +30,6 @@ CONST CHAR* g_str_BUTTON[] = {"point", "plus", "minus", "aster", "slash", "bsp",
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
-void ChangeWindowBackground(HWND hwnd);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -482,7 +481,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	//	break;
 	case WM_DESTROY:
 	{
-		// Очищаем ресурсы при закрытии окна
 		if (hBrush != NULL)
 		{
 			DeleteObject(hBrush);
