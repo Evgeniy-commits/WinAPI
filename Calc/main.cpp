@@ -98,26 +98,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	//static HBRUSH hBrush = NULL;
+	static HBRUSH hBrush = NULL;
 	switch (uMsg)
 	{
-	//case WM_CTLCOLOREDIT:
-	//{
-	//	HDC hdc = (HDC)wParam;			 // Контекст устройства поля ввода
-	//	HWND hEdit = (HWND)lParam;		// Дескриптор поля ввода
-
-	//	if (hBrush == NULL)
-	//	{
-	//		hBrush = CreateSolidBrush(RGB(100, 120, 140)); 
-	//	}
-
-	//	SetTextColor(hdc, RGB(168, 60, 9));
-
-	//	SetBkColor(hdc, RGB(100, 120, 140));
-
-	//	return (LRESULT)hBrush;
-	//}
-	//break;
 	case WM_CREATE:
 	{
 		AllocConsole();
@@ -142,7 +125,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
 			0, 0,
 			FW_BOLD,
-			TRUE,				//Italic
+			FALSE,				//Italic
 			FALSE,				//UnderLine
 			FALSE,				//StrikeOut
 			DEFAULT_CHARSET,
@@ -267,6 +250,26 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SetSkin(hwnd, "Metal_mistral");
 	}
 		break;
+	case WM_CTLCOLOREDIT:
+	{
+		HDC hdc = (HDC)wParam;			 // Контекст устройства поля ввода, С сообщением WM_CTLCOLOREDIT
+		HWND hEdit = (HWND)lParam;		// Дескриптор поля ввода;
+										// принимается HDC EditControl;
+		//SetBkMode(hdc, TRANSPARENT);          // Делаем фон прозрачным; 
+		SetBkColor(hdc, RGB(100, 120, 140));
+		SetTextColor(hdc, RGB(168, 60, 9));
+
+		if (hBrush == NULL)
+		{
+			hBrush = CreateSolidBrush(RGB(100, 120, 140)); 
+		}
+
+		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(RGB(160, 180, 200)));
+		SendMessage(hwnd, WM_ERASEBKGND, wParam, 0);
+
+		return (LRESULT)hBrush;
+	}
+	break;
 	case WM_COMMAND:
 	{
 		static DOUBLE a = DBL_MIN, b = DBL_MIN;
