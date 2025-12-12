@@ -1,41 +1,10 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #include <Windows.h>
 #include <iostream>
-#include <dwmapi.h>
-#pragma comment(lib, "dwmapi.lib")
 #include "resource.h"
+#include "dimensions.h"
+#include "ColorsAndSkins.h"
 
-CONST CHAR g_sz_WINDOW_CLASS[] = "Calc PV_521";
-
-CONST INT g_i_BUTTON_SIZE = 50;
-CONST INT g_i_INTERVAL = 1;
-CONST INT g_i_DOUBLE_BUTTON_SIZE = g_i_BUTTON_SIZE * 2 + g_i_INTERVAL;
-CONST INT g_i_DISPLAY_WIDTH = g_i_BUTTON_SIZE * 5 + g_i_INTERVAL * 4;
-CONST INT g_i_DISPLAY_HEIGHT = g_i_BUTTON_SIZE;
-CONST INT g_i_FONT_HEIGHT = g_i_DISPLAY_HEIGHT - 2;
-CONST INT g_i_FONT_WIDTH = g_i_FONT_HEIGHT / 2.5;
-
-CONST INT g_i_START_X = 10;
-CONST INT g_i_START_Y = 10;
-CONST INT g_i_BUTTON_START_X = g_i_START_X;
-CONST INT g_i_BUTTON_START_Y = g_i_START_Y + g_i_DISPLAY_HEIGHT + g_i_INTERVAL;
-
-CONST INT g_i_WINDOW_WIDTH = g_i_DISPLAY_WIDTH + g_i_START_X * 2 + 16;
-CONST INT g_i_WINDOW_HEIGHT = g_i_DISPLAY_HEIGHT + g_i_START_Y + (g_i_INTERVAL + g_i_BUTTON_SIZE) * 4 + 48;
-
-#define X_BUTTON_POSITION(position) g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (position) 
-#define Y_BUTTON_POSITION(position) g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (position)
-
-CONST CHAR g_OPERATIONS[] = "+-*/";
-CONST INT g_i_WINDOW_COLOR = 0;
-CONST INT g_i_DISPLAY_COLOR = 1;
-CONST INT g_i_FONT_COLOR = 2;
-CONST COLORREF g_clr_COLORS[][3] =
-{
-	{RGB(160, 180, 200), RGB(100, 120, 140), RGB(168, 60, 9)},
-	{RGB(0, 0, 150), RGB(0, 0, 100), RGB(255, 0, 0)}
-};
-CONST CHAR* g_sz_SKIN[] = { "Metal_mistral", "Square_blue" };
 
 CONST INT g_BUTTON[] = { IDC_BUTTON_POINT, IDC_BUTTON_PLUS, IDC_BUTTON_MINUS, IDC_BUTTON_ASTER, IDC_BUTTON_SLASH, IDC_BUTTON_BSP, IDC_BUTTON_CLR};
 CONST CHAR* g_str_BUTTON[] = {"point", "plus", "minus", "aster", "slash", "bsp", "clr"};
@@ -263,10 +232,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_CTLCOLOREDIT:
 	{
-		HDC hdc = (HDC)wParam;			 // Контекст устройства поля ввода, С сообщением WM_CTLCOLOREDIT
-		HWND hEdit = (HWND)lParam;		// Дескриптор поля ввода;
-										// принимается HDC EditControl;
-		//SetBkMode(hdc, TRANSPARENT);          // Делаем фон прозрачным; 
+		HDC hdc = (HDC)wParam;					 // Контекст устройства поля ввода, С сообщением WM_CTLCOLOREDIT
+		HWND hEdit = (HWND)lParam;				 // Дескриптор поля ввода;
+												 // принимается HDC EditControl;
+		//SetBkMode(hdc, TRANSPARENT);           // Делаем фон прозрачным; 
 		SetBkColor(hdc, g_clr_COLORS[skinID][g_i_DISPLAY_COLOR]);
 		SetTextColor(hdc, g_clr_COLORS[skinID][g_i_FONT_COLOR]);
 
@@ -299,15 +268,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (input_operation)
 			{
-				//SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)"");
 				sz_buffer[0] = 0;
 				input_operation = FALSE;
 			}
 			sz_digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
 			if (strcmp(sz_buffer, "0") == 0) strcpy(sz_buffer, sz_digit);
 			else lstrcat(sz_buffer, sz_digit);
-			//strcat() - String concatenation
-			//strcat(dst, src) - dst += src
 			SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)sz_buffer);
 			input = TRUE;
 		}
@@ -506,24 +472,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			DestroyMenu(cmMain);
 		}
 		break;
-	
-	//case WM_PAINT:
-	//{
-	//	PAINTSTRUCT ps;
-	//	HDC hdc = BeginPaint(hwnd, &ps);
-	//	HBRUSH hBrush = CreateSolidBrush(RGB(96, 124, 142));
-	//	FillRect(hdc, &ps.rcPaint, hBrush);
-	//	DeleteObject(hBrush);
-	//	EndPaint(hwnd, &ps);
-	//}
-	//	break;
+		
 	case WM_DESTROY:
 	{
-		/*if (hBrush != NULL)
-		{
-			DeleteObject(hBrush);
-			hBrush = NULL;
-		}*/
 		FreeConsole();
 		PostQuitMessage(0);
 	}
@@ -537,19 +488,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[])
-{   /*
-	if(skin == "Square_blue")
-	{
-		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(RGB(160, 180, 200)));
-		InvalidateRect(hwnd, NULL, TRUE);
-	}
-
-	if (skin == "Metal_mistral")
-	{
-		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(RGB(40, 40, 60)));
-		InvalidateRect(hwnd, NULL, TRUE);
-	}*/
-
+{  
 	CHAR sz_filename[FILENAME_MAX] = {};
 	for (int i = 0; i < 10; i++)
 	{
