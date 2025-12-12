@@ -11,7 +11,10 @@ CONST INT g_i_BUTTON_SIZE = 50;
 CONST INT g_i_INTERVAL = 1;
 CONST INT g_i_DOUBLE_BUTTON_SIZE = g_i_BUTTON_SIZE * 2 + g_i_INTERVAL;
 CONST INT g_i_DISPLAY_WIDTH = g_i_BUTTON_SIZE * 5 + g_i_INTERVAL * 4;
-CONST INT g_i_DISPLAY_HEIGHT = 22;
+CONST INT g_i_DISPLAY_HEIGHT = g_i_BUTTON_SIZE;
+CONST INT g_i_FONT_HEIGHT = g_i_DISPLAY_HEIGHT - 2;
+CONST INT g_i_FONT_WIDTH = g_i_FONT_HEIGHT / 2.5;
+
 CONST INT g_i_START_X = 10;
 CONST INT g_i_START_Y = 10;
 CONST INT g_i_BUTTON_START_X = g_i_START_X;
@@ -95,31 +98,31 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	static HBRUSH hBrush = NULL;
+	//static HBRUSH hBrush = NULL;
 	switch (uMsg)
 	{
-	case WM_CTLCOLOREDIT:
-	{
-		HDC hdc = (HDC)wParam;        // Контекст устройства поля ввода
-		HWND hEdit = (HWND)lParam; // Дескриптор поля ввода
+	//case WM_CTLCOLOREDIT:
+	//{
+	//	HDC hdc = (HDC)wParam;			 // Контекст устройства поля ввода
+	//	HWND hEdit = (HWND)lParam;		// Дескриптор поля ввода
 
-		if (hBrush == NULL)
-		{
-			hBrush = CreateSolidBrush(RGB(100, 120, 140)); 
-		}
+	//	if (hBrush == NULL)
+	//	{
+	//		hBrush = CreateSolidBrush(RGB(100, 120, 140)); 
+	//	}
 
-		SetTextColor(hdc, RGB(168, 60, 9));
+	//	SetTextColor(hdc, RGB(168, 60, 9));
 
-		SetBkColor(hdc, RGB(100, 120, 140));
+	//	SetBkColor(hdc, RGB(100, 120, 140));
 
-		return (LRESULT)hBrush;
-	}
-	break;
+	//	return (LRESULT)hBrush;
+	//}
+	//break;
 	case WM_CREATE:
 	{
 		AllocConsole();
 		freopen("CONOUT$", "w", stdout);
-		CreateWindowEx
+		HWND hEdit = CreateWindowEx
 		(
 			NULL,
 			"Edit",
@@ -132,6 +135,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+		
+		AddFontResourceEx("Fonts\\digital-7.ttf", FR_PRIVATE, 0);
+		HFONT hFont = CreateFont
+		(
+			g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
+			0, 0,
+			FW_BOLD,
+			TRUE,				//Italic
+			FALSE,				//UnderLine
+			FALSE,				//StrikeOut
+			DEFAULT_CHARSET,
+			OUT_TT_PRECIS,
+			CLIP_TT_ALWAYS,
+			ANTIALIASED_QUALITY,
+			FF_DONTCARE,
+			"Digital-7"
+		);
+		SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);
 
 		CHAR sz_button[2] = {};
 		for (int i = 6; i >= 0; i -= 3)
@@ -481,11 +502,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	//	break;
 	case WM_DESTROY:
 	{
-		if (hBrush != NULL)
+		/*if (hBrush != NULL)
 		{
 			DeleteObject(hBrush);
 			hBrush = NULL;
-		}
+		}*/
 		FreeConsole();
 		PostQuitMessage(0);
 	}
@@ -499,7 +520,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[])
-{   
+{   /*
 	if(skin == "Square_blue")
 	{
 		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(RGB(160, 180, 200)));
@@ -510,7 +531,7 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 	{
 		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(RGB(40, 40, 60)));
 		InvalidateRect(hwnd, NULL, TRUE);
-	}
+	}*/
 
 	CHAR sz_filename[FILENAME_MAX] = {};
 	for (int i = 0; i < 10; i++)
