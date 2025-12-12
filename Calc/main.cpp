@@ -1,6 +1,8 @@
-#define _CRT_SECURE_NO_WARNINGS
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include <Windows.h>
 #include <iostream>
+#include <dwmapi.h>
+#pragma comment(lib, "dwmapi.lib")
 #include "resource.h"
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc PV_521";
@@ -25,12 +27,14 @@ CONST CHAR g_OPERATIONS[] = "+-*/";
 CONST INT g_BUTTON[] = { IDC_BUTTON_POINT, IDC_BUTTON_PLUS, IDC_BUTTON_MINUS, IDC_BUTTON_ASTER, IDC_BUTTON_SLASH, IDC_BUTTON_BSP, IDC_BUTTON_CLR};
 CONST CHAR* g_str_BUTTON[] = {"point", "plus", "minus", "aster", "slash", "bsp", "clr"};
 
+
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
+void ChangeWindowBackground(HWND hwnd);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
-	//1)����������� ������ ����:
+	//1)Регистрация класса окна:
 	WNDCLASSEX wClass;
 	ZeroMemory(&wClass, sizeof(wClass));
 
@@ -51,10 +55,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 
 	if (RegisterClassEx(&wClass) == NULL)
 	{
-		MessageBox(NULL, "����� �� ���������������", NULL, MB_OK | MB_ICONERROR);
+		MessageBox(NULL, "Класс не зарегистрирован", NULL, MB_OK | MB_ICONERROR);
 		return 0;
 	}
-	//2)�������� ����:
+	//2)Создание окна:
 
 	HWND hwnd = CreateWindowEx
 	(
@@ -78,7 +82,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 
-	//3)������ ����� ���������:
+	//3)Запуск цикла сообщений:
 
 	MSG msg = {};
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
@@ -92,8 +96,30 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	static HBRUSH hBrush = NULL;
 	switch (uMsg)
 	{
+	case WM_CTLCOLOREDIT:
+	{
+		HDC hdc = (HDC)wParam;        // Контекст устройства поля ввода
+		HWND hwndEdit = (HWND)lParam; // Дескриптор поля ввода
+
+		// Создаем кисть (если ещё не создана)
+		if (hBrush == NULL)
+		{
+			hBrush = CreateSolidBrush(RGB(100, 120, 140)); 
+		}
+
+		// Устанавливаем цвет текста (чёрный)
+		SetTextColor(hdc, RGB(0, 0, 0));
+
+		// Устанавливаем цвет фона текста (прозрачный, чтобы не конфликтовал с кистью)
+		SetBkColor(hdc, RGB(100, 120, 140));
+
+		// Возвращаем кисть для закрашивания фона
+		return (LRESULT)hBrush;
+	}
+	break;
 	case WM_CREATE:
 	{
 		AllocConsole();
@@ -222,7 +248,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
-		SetSkin(hwnd, "square_blue");
+		SetSkin(hwnd, "Metal_mistral");
 	}
 		break;
 	case WM_COMMAND:
@@ -419,46 +445,56 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 	}
 		break;
+	
 	case WM_CONTEXTMENU:
-	{
-		HMENU cmMain = CreatePopupMenu();
-		AppendMenu(cmMain, MF_STRING, IDM_SQUARE_BLUE, "Square blue");
-		AppendMenu(cmMain, MF_STRING, IDM_METAL_MISTRAL, "Metal mistral");
-		AppendMenu(cmMain, MF_SEPARATOR, NULL, NULL);
-		AppendMenu(cmMain, MF_STRING, IDM_EXIT, "Exit");
-
-		BOOL selected_item = TrackPopupMenuEx
-		(
-			cmMain,
-			TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON | TPM_VERNEGANIMATION,
-			LOWORD(lParam), HIWORD(lParam),
-			//0, //Reserved
-			hwnd,
-			NULL
-		);
-
-		switch (selected_item)
 		{
-		case IDM_SQUARE_BLUE: SetSkin(hwnd, "Square_blue"); break;
-		case IDM_METAL_MISTRAL: SetSkin(hwnd, "Metal_mistral"); break;
-		case IDM_EXIT: SendMessage(hwnd, WM_CLOSE, 0, 0); break;
+			HMENU cmMain = CreatePopupMenu();
+			AppendMenu(cmMain, MF_STRING, IDM_SQUARE_BLUE, "Square blue");
+			AppendMenu(cmMain, MF_STRING, IDM_METAL_MISTRAL, "Metal mistral");
+			AppendMenu(cmMain, MF_SEPARATOR, NULL, NULL);
+			AppendMenu(cmMain, MF_STRING, IDM_EXIT, "Exit");
+
+			BOOL selected_item = TrackPopupMenuEx
+			(
+				cmMain,
+				TPM_RIGHTALIGN | TPM_BOTTOMALIGN | TPM_RETURNCMD | TPM_RIGHTBUTTON | TPM_VERNEGANIMATION,
+				LOWORD(lParam), HIWORD(lParam),
+				//0, //Reserved
+				hwnd,
+				NULL
+			);
+
+			switch (selected_item)
+			{
+			case IDM_SQUARE_BLUE: SetSkin(hwnd, "Square_blue"); break;
+			case IDM_METAL_MISTRAL: SetSkin(hwnd, "Metal_mistral"); break;
+			case IDM_EXIT: SendMessage(hwnd, WM_CLOSE, 0, 0); break;
+			}
+			DestroyMenu(cmMain);
 		}
-		DestroyMenu(cmMain);
-	}
 		break;
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hwnd, &ps);
-		HBRUSH hBrush = CreateSolidBrush(RGB(96, 124, 142));
-		FillRect(hdc, &ps.rcPaint, hBrush);
-		DeleteObject(hBrush);
-		EndPaint(hwnd, &ps);
-	}
-		break;
+	
+	//case WM_PAINT:
+	//{
+	//	PAINTSTRUCT ps;
+	//	HDC hdc = BeginPaint(hwnd, &ps);
+	//	HBRUSH hBrush = CreateSolidBrush(RGB(96, 124, 142));
+	//	FillRect(hdc, &ps.rcPaint, hBrush);
+	//	DeleteObject(hBrush);
+	//	EndPaint(hwnd, &ps);
+	//}
+	//	break;
 	case WM_DESTROY:
+	{
+		// Очищаем ресурсы при закрытии окна
+		if (hBrush != NULL)
+		{
+			DeleteObject(hBrush);
+			hBrush = NULL;
+		}
 		FreeConsole();
 		PostQuitMessage(0);
+	}
 		break;
 	case WM_CLOSE:
 		DestroyWindow(hwnd);
@@ -469,7 +505,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 }
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[])
-{
+{   
+	if(skin == "Square_blue")
+	{
+		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(RGB(160, 180, 200)));
+		InvalidateRect(hwnd, NULL, TRUE);
+	}
+
+	if (skin == "Metal_mistral")
+	{
+		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(RGB(40, 40, 60)));
+		InvalidateRect(hwnd, NULL, TRUE);
+	}
+
 	CHAR sz_filename[FILENAME_MAX] = {};
 	for (int i = 0; i < 10; i++)
 	{
@@ -514,3 +562,4 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 	);
 	SendMessage(hButtonEqual, BM_SETIMAGE, 0, (LPARAM)bmpButtonEqual);
 }
+
