@@ -102,21 +102,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_CTLCOLOREDIT:
 	{
 		HDC hdc = (HDC)wParam;        // Контекст устройства поля ввода
-		HWND hwndEdit = (HWND)lParam; // Дескриптор поля ввода
+		HWND hEdit = (HWND)lParam; // Дескриптор поля ввода
 
-		// Создаем кисть (если ещё не создана)
 		if (hBrush == NULL)
 		{
 			hBrush = CreateSolidBrush(RGB(100, 120, 140)); 
 		}
 
-		// Устанавливаем цвет текста (чёрный)
-		SetTextColor(hdc, RGB(0, 0, 0));
+		SetTextColor(hdc, RGB(168, 60, 9));
 
-		// Устанавливаем цвет фона текста (прозрачный, чтобы не конфликтовал с кистью)
 		SetBkColor(hdc, RGB(100, 120, 140));
 
-		// Возвращаем кисть для закрашивания фона
 		return (LRESULT)hBrush;
 	}
 	break;
