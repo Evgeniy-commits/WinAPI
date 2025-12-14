@@ -77,7 +77,6 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	static HBRUSH hBrush = NULL;
 	static INT skinID = 0;
 	switch (uMsg)
 	{
@@ -238,12 +237,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//SetBkMode(hdc, TRANSPARENT);           // Делаем фон прозрачным; 
 		SetBkColor(hdc, g_clr_COLORS[skinID][g_i_DISPLAY_COLOR]);
 		SetTextColor(hdc, g_clr_COLORS[skinID][g_i_FONT_COLOR]);
-
-		if (hBrush == NULL)
-		{
-			hBrush = CreateSolidBrush(g_clr_COLORS[skinID][g_i_WINDOW_COLOR]);
-		}
-
+		HBRUSH hBrush = CreateSolidBrush(g_clr_COLORS[skinID][g_i_WINDOW_COLOR]);
+		
 		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
 		SendMessage(hwnd, WM_ERASEBKGND, wParam, 0);
 		//DeleteObject(hBrush);
