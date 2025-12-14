@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include <iostream>
 #include "resource.h"
-#include "Dimensions.h"
+#include "dimensions.h"
 #include "ColorAndSkins.h"
 
 
@@ -77,31 +77,14 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	static HBRUSH hBrush = NULL;
+	static INT skinID = 0;
 	switch (uMsg)
 	{
-	case WM_CTLCOLOREDIT:
-	{
-		HDC hdc = (HDC)wParam;        // Контекст устройства поля ввода
-		HWND hEdit = (HWND)lParam; // Дескриптор поля ввода
-
-		if (hBrush == NULL)
-		{
-			hBrush = CreateSolidBrush(RGB(100, 120, 140));
-		}
-
-		SetTextColor(hdc, RGB(168, 60, 9));
-
-		SetBkColor(hdc, RGB(100, 120, 140));
-
-		return (LRESULT)hBrush;
-	}
-	break;
 	case WM_CREATE:
 	{
 		AllocConsole();
 		freopen("CONOUT$", "w", stdout);
-		CreateWindowEx
+		HWND hEdit = CreateWindowEx
 		(
 			NULL,
 			"Edit",
@@ -114,6 +97,24 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+
+		AddFontResourceEx("Fonts\\digital-7.ttf", FR_PRIVATE, 0);
+		HFONT hFont = CreateFont
+		(
+			g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
+			0, 0,
+			FW_BOLD,
+			FALSE,				//Italic
+			FALSE,				//UnderLine
+			FALSE,				//StrikeOut
+			DEFAULT_CHARSET,
+			OUT_TT_PRECIS,
+			CLIP_TT_ALWAYS,
+			ANTIALIASED_QUALITY,
+			FF_DONTCARE,
+			"Digital-7"
+		);
+		SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);
 
 		CHAR sz_button[2] = {};
 		for (int i = 6; i >= 0; i -= 3)
@@ -228,6 +229,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SetSkin(hwnd, "Metal_mistral");
 	}
 	break;
+	case WM_CTLCOLOREDIT:
+	{
+		HDC hdc = (HDC)wParam;					 // Контекст устройства поля ввода, С сообщением WM_CTLCOLOREDIT
+		HWND hEdit = (HWND)lParam;				 // Дескриптор поля ввода;
+		// принимается HDC EditControl;
+//SetBkMode(hdc, TRANSPARENT);           // Делаем фон прозрачным; 
+		SetBkColor(hdc, g_clr_COLORS[skinID][g_i_DISPLAY_COLOR]);
+		SetTextColor(hdc, g_clr_COLORS[skinID][g_i_FONT_COLOR]);
+		HBRUSH hBrush = CreateSolidBrush(g_clr_COLORS[skinID][g_i_WINDOW_COLOR]);
+
+		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
+		SendMessage(hwnd, WM_ERASEBKGND, wParam, 0);
+		//DeleteObject(hBrush);
+		return (LRESULT)hBrush;
+	}
+	break;
 	case WM_COMMAND:
 	{
 		static DOUBLE a = DBL_MIN, b = DBL_MIN;
@@ -246,15 +263,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (input_operation)
 			{
-				//SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)"");
 				sz_buffer[0] = 0;
 				input_operation = FALSE;
 			}
 			sz_digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
 			if (strcmp(sz_buffer, "0") == 0) strcpy(sz_buffer, sz_digit);
 			else lstrcat(sz_buffer, sz_digit);
-			//strcat() - String concatenation
-			//strcat(dst, src) - dst += src
 			SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)sz_buffer);
 			input = TRUE;
 		}
@@ -443,31 +457,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		switch (selected_item)
 		{
-		case IDM_SQUARE_BLUE: SetSkin(hwnd, "Square_blue"); break;
-		case IDM_METAL_MISTRAL: SetSkin(hwnd, "Metal_mistral"); break;
+		case IDM_SQUARE_BLUE: skinID = 1; break;
+		case IDM_METAL_MISTRAL: skinID = 0; break;
 		case IDM_EXIT: SendMessage(hwnd, WM_CLOSE, 0, 0); break;
 		}
+
+		InvalidateRect(hwnd, 0, TRUE);
+		SetSkin(hwnd, g_sz_SKIN[skinID]);
 		DestroyMenu(cmMain);
 	}
 	break;
 
-	//case WM_PAINT:
-	//{
-	//	PAINTSTRUCT ps;
-	//	HDC hdc = BeginPaint(hwnd, &ps);
-	//	HBRUSH hBrush = CreateSolidBrush(RGB(96, 124, 142));
-	//	FillRect(hdc, &ps.rcPaint, hBrush);
-	//	DeleteObject(hBrush);
-	//	EndPaint(hwnd, &ps);
-	//}
-	//	break;
 	case WM_DESTROY:
 	{
-		if (hBrush != NULL)
-		{
-			DeleteObject(hBrush);
-			hBrush = NULL;
-		}
 		FreeConsole();
 		PostQuitMessage(0);
 	}
@@ -482,18 +484,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 {
-	if (skin == "Square_blue")
-	{
-		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(RGB(160, 180, 200)));
-		InvalidateRect(hwnd, NULL, TRUE);
-	}
-
-	if (skin == "Metal_mistral")
-	{
-		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)CreateSolidBrush(RGB(40, 40, 60)));
-		InvalidateRect(hwnd, NULL, TRUE);
-	}
-
 	CHAR sz_filename[FILENAME_MAX] = {};
 	for (int i = 0; i < 10; i++)
 	{
