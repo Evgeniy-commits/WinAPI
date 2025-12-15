@@ -6,12 +6,9 @@
 #include "ColorsAndSkins.h"
 
 
-CONST INT g_BUTTON[] = { IDC_BUTTON_POINT, IDC_BUTTON_PLUS, IDC_BUTTON_MINUS, IDC_BUTTON_ASTER, IDC_BUTTON_SLASH, IDC_BUTTON_BSP, IDC_BUTTON_CLR};
-CONST CHAR* g_str_BUTTON[] = {"point", "plus", "minus", "aster", "slash", "bsp", "clr"};
-
-
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
+VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[]);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -226,7 +223,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
-		SetSkin(hwnd, "Metal_mistral");
+		SetSkinFromDLL(hwnd, "square_blue");
 	}
 		break;
 	case WM_CTLCOLOREDIT:
@@ -463,7 +460,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			}
 			
 			InvalidateRect(hwnd, 0, TRUE);
-			SetSkin(hwnd, g_sz_SKIN[skinID]);
+			SetSkinFromDLL(hwnd, g_sz_SKIN[skinID]);
 			DestroyMenu(cmMain);
 		}
 		break;
@@ -484,6 +481,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 {  
+	CONST INT g_BUTTON[] = { IDC_BUTTON_POINT, IDC_BUTTON_PLUS, IDC_BUTTON_MINUS, IDC_BUTTON_ASTER, IDC_BUTTON_SLASH, IDC_BUTTON_BSP, IDC_BUTTON_CLR };
+	CONST CHAR* g_str_BUTTON[] = { "point", "plus", "minus", "aster", "slash", "bsp", "clr" };
 	CHAR sz_filename[FILENAME_MAX] = {};
 	for (int i = 0; i < 10; i++)
 	{
@@ -529,3 +528,22 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 	SendMessage(hButtonEqual, BM_SETIMAGE, 0, (LPARAM)bmpButtonEqual);
 }
 
+VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[])
+{
+	HMODULE hSkin = LoadLibrary(skin);
+	for (INT i = IDC_BUTTON_0; i <= IDC_BUTTON_EQUAL; i++)
+	{
+		HWND hButton = GetDlgItem(hwnd, i);
+		HBITMAP hBitmap = (HBITMAP)LoadImage
+		(
+			hSkin,
+			MAKEINTRESOURCE(i),
+			IMAGE_BITMAP,
+			i == IDC_BUTTON_0 ? g_i_DOUBLE_BUTTON_SIZE : g_i_BUTTON_SIZE,
+			i == IDC_BUTTON_EQUAL ? g_i_DOUBLE_BUTTON_SIZE : g_i_BUTTON_SIZE,
+			LR_SHARED
+		);
+		SendMessage(hButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
+	}
+	FreeLibrary(hSkin);
+}
