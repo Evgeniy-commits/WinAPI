@@ -558,8 +558,8 @@ VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[])
 VOID LoadFDLL(HMODULE hDll)
 {
 	HRSRC hResource = FindResource(hDll, (LPCTSTR)"MYFONT", RT_RCDATA);	// Находим ресурс
-	HGLOBAL hFMem = LoadResource(hDll, hResource);					// Загружаем ресурс в память
-	VOID* fontData = LockResource(hFMem);							// Получаем указатель на данные шрифта
+	HGLOBAL hFMem = LoadResource(hDll, hResource);						// Загружаем ресурс в память
+	VOID* fontData = LockResource(hFMem);								// Получаем указатель на данные шрифта
 	DWORD nFont = 0;
 	DWORD len = SizeofResource(hDll, hResource);
 	AddFontMemResourceEx(fontData, len, NULL, &nFont);
