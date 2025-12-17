@@ -9,6 +9,7 @@
 LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
 VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[]);
+VOID LoadFDLL(HMODULE hDll);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -95,7 +96,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 		
-		AddFontResourceEx("Fonts\\digital-7.ttf", FR_PRIVATE, 0);
+		//AddFontResourceEx("Fonts\\digital-7.ttf", FR_PRIVATE, 0);
+		HMODULE hDll = LoadLibrary("FontDll.dll");
+		LoadFDLL(hDll);
 		HFONT hFont = CreateFont
 		(
 			g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
@@ -224,6 +227,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 		SetSkinFromDLL(hwnd, "square_blue");
+		
 	}
 		break;
 	case WM_CTLCOLOREDIT:
@@ -478,6 +482,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	default: return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
+	
 	return FALSE;
 }
 
@@ -548,4 +553,15 @@ VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[])
 		SendMessage(hButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)hBitmap);
 	}
 	FreeLibrary(hSkin);
+}
+
+VOID LoadFDLL(HMODULE hDll)
+{
+	HRSRC hResource = FindResource(hDll, (LPCTSTR)"MYFONT", RT_RCDATA);	// Находим ресурс
+	HGLOBAL hFMem = LoadResource(hDll, hResource);					// Загружаем ресурс в память
+	VOID* fontData = LockResource(hFMem);							// Получаем указатель на данные шрифта
+	DWORD nFont = 0;
+	DWORD len = SizeofResource(hDll, hResource);
+	AddFontMemResourceEx(fontData, len, NULL, &nFont);
+	FreeLibrary(hDll);
 }
