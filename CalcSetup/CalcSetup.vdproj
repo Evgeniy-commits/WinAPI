@@ -27,6 +27,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_50F8F613BAFF438AA0043A69B5E7A6AE"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_A076AAA5EA6B42568943AEB0B6906371"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -67,6 +73,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -83,6 +105,14 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
@@ -130,6 +160,26 @@
             "TargetName" = "8:metal_mistral.dll"
             "Tag" = "8:"
             "Folder" = "8:_28730E2F751043A2B0159BC427BBF2D2"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_50F8F613BAFF438AA0043A69B5E7A6AE"
+            {
+            "SourcePath" = "8:..\\Calc\\CalcIcon.ico"
+            "TargetName" = "8:CalcIcon.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_B3A5E908CF7F41D0AA455E61D60BC7B5"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -251,6 +301,17 @@
                         {
                         }
                     }
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_B3A5E908CF7F41D0AA455E61D60BC7B5"
+                    {
+                    "Name" = "8:Ico"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_8257EBB643674783BA45CBD4664F8052"
+                        "Folders"
+                        {
+                        }
+                    }
                 }
             }
             "{1525181F-901A-416C-8A58-119130FE478E}:_824B5E16309840FF9492C86373AABBE0"
@@ -292,7 +353,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:CalcPV_521"
         "ProductCode" = "8:{06F3F76D-9D79-4B20-8B53-F6739F759AD7}"
-        "PackageCode" = "8:{15636BA9-A739-42D0-BE52-D572E7AA958C}"
+        "PackageCode" = "8:{57DF28B4-614B-40F0-BAFF-B028469D7B39}"
         "UpgradeCode" = "8:{4D353210-823E-4CA3-BE39-8867EA7357B2}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -423,7 +484,7 @@
             "Target" = "8:_A1FBA9FB21D34691A44E8DB79DBA9563"
             "Folder" = "8:_9EFACBED55174659A2241A91ADCCCE97"
             "WorkingFolder" = "8:_28730E2F751043A2B0159BC427BBF2D2"
-            "Icon" = "8:"
+            "Icon" = "8:_50F8F613BAFF438AA0043A69B5E7A6AE"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_976E9E942267421AB56F851812A11C07"
@@ -437,7 +498,7 @@
             "Target" = "8:_A1FBA9FB21D34691A44E8DB79DBA9563"
             "Folder" = "8:_824B5E16309840FF9492C86373AABBE0"
             "WorkingFolder" = "8:_28730E2F751043A2B0159BC427BBF2D2"
-            "Icon" = "8:"
+            "Icon" = "8:_50F8F613BAFF438AA0043A69B5E7A6AE"
             "Feature" = "8:"
             }
         }
