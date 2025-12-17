@@ -439,6 +439,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			HMENU cmMain = CreatePopupMenu();
 			AppendMenu(cmMain, MF_STRING, IDM_SQUARE_BLUE, "Square blue");
 			AppendMenu(cmMain, MF_STRING, IDM_METAL_MISTRAL, "Metal mistral");
+			AppendMenu(cmMain, MF_STRING, IDM_MY_BUTTON, "Mu button");
 			AppendMenu(cmMain, MF_SEPARATOR, NULL, NULL);
 			AppendMenu(cmMain, MF_STRING, IDM_EXIT, "Exit");
 
@@ -456,6 +457,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 			case IDM_SQUARE_BLUE: skinID = 1; break;
 			case IDM_METAL_MISTRAL: skinID = 0; break;
+			case IDM_MY_BUTTON: skinID = 2; break;
 			case IDM_EXIT: SendMessage(hwnd, WM_CLOSE, 0, 0); break;
 			}
 			
