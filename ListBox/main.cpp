@@ -31,8 +31,10 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam))
 		{
 		case IDC_LIST1:
+		{
 			if (HIWORD(wParam) == LBN_DBLCLK)
 				DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_ADD), hwnd, (DLGPROC)DlgProcEdit, 0);
+		}
 			break;
 		case IDC_BUTTON_ADD:
 		{
