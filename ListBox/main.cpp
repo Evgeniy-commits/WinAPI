@@ -56,6 +56,22 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	}
+	/*case WM_KEYDOWN:
+	{
+		switch (wParam)
+		{
+		case VK_RETURN:
+		{
+			HWND hList = GetDlgItem(hwnd, IDC_LIST1);
+			if (GetFocus() == hList)
+			{
+				DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_ADD), hwnd, (DLGPROC)DlgProcEdit, 0);
+			}
+		}
+		break;
+		}
+	}
+		break;*/
 	case WM_CLOSE:
 		EndDialog(hwnd, 0);
 	}
